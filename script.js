@@ -268,6 +268,9 @@ function renderDocumentParsingDetails() {
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${isTextBlock ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
                         ${isTextBlock ? '文本' : '图片'}
                     </span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                            置信度: ${Math.round((block.confidence || 0) * 100)}%
+                        </span>
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
                             ID: ${block.id}
                         </span>
@@ -278,9 +281,6 @@ function renderDocumentParsingDetails() {
                         -->
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
                             时间段: ${formatTime(block.area.startTime)} - ${formatTime(block.area.endTime)}
-                        </span>
-                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                            置信度: ${Math.round((block.confidence || 0) * 100)}%
                         </span>
                     </div>
                     <div class="flex space-x-3 items-center">
