@@ -261,7 +261,7 @@ function renderDocumentParsingDetails() {
         return `
             <div
                 id="block-${block.id}"
-                class="block-item p-4 rounded-lg border transition-all duration-300 cursor-pointer bg-white border-gray-200 min-w-0 box-border min-h-28 py-6 ${highlightedBlockId === block.id ? 'border-blue-500 ring-2 ring-blue-400 shadow-lg' : ''} ${block.disabled ? 'opacity-50 bg-gray-100' : ''}"
+                class="block-item p-4 rounded-lg border transition-all duration-300 bg-white border-gray-200 min-w-0 box-border min-h-28 py-6 ${highlightedBlockId === block.id ? 'border-blue-500 ring-2 ring-blue-400 shadow-lg' : ''} ${block.disabled ? 'opacity-50 bg-gray-100' : ''}"
                 data-id="${block.id}">
                 <div class="flex justify-between items-start mb-2 min-w-0">
                     <div class="flex gap-2">
@@ -621,9 +621,11 @@ function attachDocumentParsingDetailsListeners() {
                 return;
             }
             // 点击分块本身高亮
+            /*
             if (blockItem && blockId) {
                 handleBlockSelect(blockId);
             }
+            */
         });
     }
 
@@ -1018,6 +1020,24 @@ function openDetailViewModal(content, type) {
 
 function handleBlockSelect(id) {
     console.log('选中分块:', id);
+    
+    // 检查是否点击了同一个已选中的分块
+    if (highlightedBlockId === id) {
+        // 取消选中
+        highlightedBlockId = null;
+        console.log('取消选中分块:', id);
+        
+        // 移除所有高亮样式
+        document.querySelectorAll('.block-item').forEach(item => {
+            item.classList.remove('border-blue-500', 'ring-2', 'ring-blue-400', 'shadow-lg');
+            item.classList.add('border-gray-200');
+        });
+        
+        // 取消选中时不改变视频进度条位置
+        return;
+    }
+    
+    // 选中新的分块
     highlightedBlockId = id;
     
     // 更新当前选中的块样式（不重新渲染整个页面）
