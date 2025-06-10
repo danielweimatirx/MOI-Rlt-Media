@@ -2,6 +2,7 @@
 
 // Global state variables
 let currentPage = 'parsingDetails'; // 'parsingDetails' or 'smartSearch'
+let currentPlayingBlockId = null; // Track which block is currently playing
 
 // --- State for DocumentParsingDetails ---
 let displayFilter = 'all'; // 'all', 'text', 'image'
@@ -93,6 +94,7 @@ const Icons = {
     ChevronRight: (size = 16, className = "") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
     X: (size = 20, className = "") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>`,
     Play: (size = 18, className = "text-blue-600") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+    Pause: (size = 18, className = "text-blue-600") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`,
 };
 
 // Function to set current page and re-render
@@ -284,8 +286,8 @@ function renderDocumentParsingDetails() {
                         </span>
                     </div>
                     <div class="flex space-x-3 items-center">
-                        <button class="play-block-btn text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 rounded-full transition-colors" data-id="${block.id}" title="播放此时间段">
-                            ${Icons.Play(18)}
+                        <button class="play-block-btn text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 rounded-full transition-colors" data-id="${block.id}" title="${currentPlayingBlockId === block.id ? '暂停播放' : '播放此时间段'}">
+                            ${currentPlayingBlockId === block.id ? Icons.Pause(18) : Icons.Play(18)}
                         </button>
                         <!--
                         <button class="delete-block-btn text-gray-500 hover:text-red-600" data-id="${block.id}" title="删除">
@@ -803,6 +805,8 @@ function attachDocumentParsingDetailsListeners() {
 
         videoPlayer.addEventListener('pause', () => {
             console.log('视频暂停');
+            // 当用户直接在视频播放器上暂停时，只更新按钮状态，保持currentPlayingBlockId
+            updatePlayButtons();
         });
 
         videoPlayer.addEventListener('error', (e) => {
@@ -877,16 +881,84 @@ function handlePlayClick(id) {
         return;
     }
     
-    console.log('找到文本块:', block);
-    
     const videoPlayer = document.getElementById('video-player');
     if (!videoPlayer) {
         console.log('找不到视频播放器元素');
         return;
     }
 
-    console.log('视频播放器元素:', videoPlayer);
+    // 如果点击的是当前正在播放的块，执行暂停操作
+    if (currentPlayingBlockId === id && !videoPlayer.paused) {
+        console.log('暂停当前播放的块:', id);
+        videoPlayer.pause();
+        // 注意：不清除 currentPlayingBlockId，保持暂停状态
+        
+        // 更新按钮状态（显示播放按钮）
+        updatePlayButtons();
+        return;
+    }
+    
+    // 如果点击的是当前暂停的块，从当前位置继续播放
+    if (currentPlayingBlockId === id && videoPlayer.paused) {
+        console.log('从暂停位置继续播放块:', id);
+        const currentTime = videoPlayer.currentTime;
+        
+        // 检查当前时间是否还在该块的时间范围内
+        if (currentTime >= block.area.startTime && currentTime < block.area.endTime) {
+            console.log(`从当前位置继续播放: ${formatTime(currentTime)}`);
+            // 从当前位置继续播放，不跳转时间
+        } else {
+            console.log(`当前时间超出范围，跳转到开始时间: ${formatTime(block.area.startTime)}`);
+            videoPlayer.currentTime = block.area.startTime;
+        }
+        
+        const playPromise = videoPlayer.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('从暂停位置继续播放成功');
+                updatePlayButtons();
+            }).catch(error => {
+                console.log('继续播放失败:', error);
+                currentPlayingBlockId = null;
+                updatePlayButtons();
+            });
+        }
+        
+        // 重新设置结束时间监听器
+        if (videoPlayer._currentEndTimeListener) {
+            videoPlayer.removeEventListener('timeupdate', videoPlayer._currentEndTimeListener);
+        }
+        
+        const checkEndTime = () => {
+            if (videoPlayer.currentTime >= block.area.endTime) {
+                videoPlayer.pause();
+                console.log(`在${formatTime(block.area.endTime)}处自动暂停`);
+                currentPlayingBlockId = null;
+                videoPlayer.removeEventListener('timeupdate', checkEndTime);
+                videoPlayer._currentEndTimeListener = null;
+                updatePlayButtons();
+            }
+        };
+        videoPlayer.addEventListener('timeupdate', checkEndTime);
+        videoPlayer._currentEndTimeListener = checkEndTime;
+        
+        return;
+    }
+    
+    // 如果有其他块正在播放，先停止它
+    if (currentPlayingBlockId && currentPlayingBlockId !== id) {
+        videoPlayer.pause();
+        if (videoPlayer._currentEndTimeListener) {
+            videoPlayer.removeEventListener('timeupdate', videoPlayer._currentEndTimeListener);
+            videoPlayer._currentEndTimeListener = null;
+        }
+    }
+    
+    console.log('开始播放新块:', block);
     console.log(`播放时间段: ${formatTime(block.area.startTime)} - ${formatTime(block.area.endTime)}`);
+    
+    // 设置当前播放块ID
+    currentPlayingBlockId = id;
     
     // 设置当前高亮块
     highlightedBlockId = id;
@@ -904,7 +976,7 @@ function handlePlayClick(id) {
         console.log('已高亮文本块');
     }
     
-    // 跳转到开始时间并播放
+    // 跳转到开始时间并播放（新块总是从开始播放）
     try {
         console.log('设置视频时间到:', block.area.startTime);
         videoPlayer.currentTime = block.area.startTime;
@@ -915,19 +987,19 @@ function handlePlayClick(id) {
         if (playPromise !== undefined) {
             playPromise.then(() => {
                 console.log('视频开始播放成功');
+                // 更新按钮状态
+                updatePlayButtons();
             }).catch(error => {
                 console.log('播放失败:', error);
-                // 可能需要用户交互才能播放
+                currentPlayingBlockId = null;
+                updatePlayButtons();
                 alert('播放失败，可能需要先点击视频播放器进行用户交互。错误：' + error.message);
             });
         }
     } catch (error) {
         console.log('播放过程中发生错误:', error);
-    }
-    
-    // 移除之前的时间监听器（如果存在）
-    if (videoPlayer._currentEndTimeListener) {
-        videoPlayer.removeEventListener('timeupdate', videoPlayer._currentEndTimeListener);
+        currentPlayingBlockId = null;
+        updatePlayButtons();
     }
     
     // 添加新的时间监听器，在结束时间暂停
@@ -935,12 +1007,39 @@ function handlePlayClick(id) {
         if (videoPlayer.currentTime >= block.area.endTime) {
             videoPlayer.pause();
             console.log(`在${formatTime(block.area.endTime)}处自动暂停`);
+            currentPlayingBlockId = null;
             videoPlayer.removeEventListener('timeupdate', checkEndTime);
             videoPlayer._currentEndTimeListener = null;
+            // 播放结束时更新按钮状态
+            updatePlayButtons();
         }
     };
     videoPlayer.addEventListener('timeupdate', checkEndTime);
     videoPlayer._currentEndTimeListener = checkEndTime;
+}
+
+// 更新所有播放按钮的显示状态
+function updatePlayButtons() {
+    const videoPlayer = document.getElementById('video-player');
+    
+    document.querySelectorAll('.play-block-btn').forEach(btn => {
+        const blockId = btn.dataset.id;
+        const isCurrentBlock = currentPlayingBlockId === blockId;
+        const isPlaying = isCurrentBlock && videoPlayer && !videoPlayer.paused;
+        
+        // 更新图标
+        const iconHtml = isPlaying ? Icons.Pause(18) : Icons.Play(18);
+        btn.innerHTML = iconHtml;
+        
+        // 更新标题
+        if (isCurrentBlock && videoPlayer && videoPlayer.paused) {
+            btn.title = '继续播放';
+        } else if (isPlaying) {
+            btn.title = '暂停播放';
+        } else {
+            btn.title = '播放此时间段';
+        }
+    });
 }
 
 function confirmDelete() {
