@@ -16,7 +16,7 @@ let detailViewContent = { content: '', type: '' };
 let searchIdQuery = '';
 let searchTextQuery = '';
 let videoCurrentTime = 0; // Track video playback time
-let videoDuration = 229; // 3分49秒 = 229秒
+let videoDuration = 0; // Will be set when video metadata loads
 let parsedBlocksCurrentPage = 1;
 let blocksPerPage = 5;
 let expandedBlockId = null;
@@ -24,14 +24,14 @@ const APPROX_LINE_CHAR_LIMIT = 180;
 
 // Mock data for parsed blocks
 let parsedBlocks = [
-    { id: 'text_info_title', type: 'text', content: '论文题目: 基于语音辅助的多语言文本分类语言偏见去偏研究方佳俊', disabled: false, area: { top: '29%', left: '15%', width: '70%', height: '5%', startTime: 0, endTime: 8 }, isExpanded: false, speaker: 'Speaker1' },
-    { id: 'text_info_author', type: 'text', content: `论文作者: 方佳俊 指导教师 阳爱民\\n\\n该作者在多语言文本分类领域进行了深入研究，尤其关注如何消除语言偏见对模型性能的影响。他的研究旨在开发创新的语音辅助去偏技术，以提高跨语言文本分类的公平性和准确性。\\n\\n研究内容涵盖了以下几个方面：\\n1. 多语言数据集的构建与偏见分析。\\n2. 基于语音特征的语言偏见识别方法。\\n3. 深度学习模型在去偏任务中的应用。\\n4. 评估去偏效果的指标与方法。\\n5. 实际应用场景中的案例分析与效果验证。\\n\\n方佳俊同学的这项工作对于推动多语言自然语言处理技术的发展，以及构建更公平、更具包容性的人工智能系统具有重要意义。他的研究成果不仅填补了相关领域的空白，也为未来的研究提供了宝贵的思路和方向。\\n\\n在研究过程中，他积极参与学术交流，多次在国内外顶级会议上发表论文，并与多个研究机构建立了合作关系。这些经历进一步丰富了他的学术视野和实践能力。\\n\\n为了充分展示该研究的深度和广度，我们在此增加更多详细信息。研究团队在数据预处理阶段投入了大量精力，确保了训练数据的多样性和代表性。他们采用了先进的自然语言处理技术，对不同语言的文本数据进行了细致的特征提取和表示学习。在模型设计方面，研究人员探索了多种神经网络架构，包括循环神经网络（RNN）、长短期记忆网络（LSTM）和Transformer等，并针对语音辅助去偏的特点进行了创新性改进。\\n\\n实验结果表明，所提出的语音辅助去偏方法在多个公开数据集上均取得了显著的性能提升，有效降低了语言偏见对文本分类结果的影响。这些成果为构建更加鲁棒和公平的AI系统提供了坚实的基础。未来的工作将侧重于将该技术应用于更广泛的领域，例如情感分析、意图识别和机器翻译等，并进一步探索多模态信息融合的潜力。\\n\\n为了确保滚动条能够出现，我们继续增加一些内容。这项研究的创新之处在于其跨学科的融合，将语音信号处理与自然语言处理技术相结合，为解决多语言环境下的偏见问题提供了新的视角。此外，研究团队还开发了一套可扩展的评估框架，能够全面衡量去偏算法的有效性，并为不同应用场景提供定制化的解决方案。这些努力共同构成了方佳俊同学在多语言文本分类语言偏见去偏研究方面的全面贡献。他的研究不仅具有理论价值，更具备实际应用潜力，有望在未来为全球范围内的多语言信息处理带来积极影响。\\n\\n我们还将进一步探讨二维码在现代商业中的多种应用。除了作为联系客服的便捷工具，二维码还可以被集成到营销活动中，例如扫描二维码获取折扣券、参与抽奖活动或直接跳转到产品购买页面。在物流和仓储管理中，二维码被广泛用于追踪货物，提高效率和准确性。在教育领域，学生可以通过扫描二维码快速访问在线课程资料或提交作业。这些多样化的应用场景充分体现了二维码作为一种高效信息载体的巨大潜力，它极大地简化了信息获取和交互过程，为用户带来了前所未有的便利。方佳俊的研究论文还详细讨论了在不同语言对（如中英、中日）之间进行偏见去偏的挑战和机遇，并提出了针对性的策略。他强调了跨文化语境理解的重要性，以及如何通过引入文化敏感性特征来进一步提升模型的去偏能力。`, disabled: false, area: { top: '34%', left: '15%', width: '70%', height: '3%', startTime: 8, endTime: 22 }, isExpanded: false, speaker: 'Speaker1' },
-    { id: 'text_detection_desc_1', type: 'text', content: `1. 检测依据:学校模板《广东工业大学硕士专业学位论文模板》;国家标准《GB7713 学位论文编写格式》,《GB7714参考文献著录规则》,《GB15834标点符号用法》,《GB15835出版物上数字用法》,《GB3100国际单位制及其应用》,《GB3101有关量单位符号的一般原则》,《GB3102空间和时间的量和单位》。\\n\\n本检测报告严格遵循上述国家标准和学校规定，确保检测过程的严谨性和结果的准确性。所有引用规则均经过最新修订，以适应当前学术规范的要求。检测范围涵盖了从论文结构、引用格式到标点符号使用等多个维度，旨在提供全面、细致的格式审查服务。\\n\\n我们致力于帮助学生和研究人员提升论文质量，符合各项出版和学术要求。`, disabled: false, area: { top: '55%', left: '10%', width: '80%', height: '15%', startTime: 22, endTime: 37 }, isExpanded: false, speaker: 'Sperker2' },
-    { id: 'text_detection_result', type: 'text', content: '检测结果: 全文页数 72, 字符统计 65979, 中文字符 31115, 非中文单词 3372, 问题总数 = 6, 万字差错率 0.90/10000, 结论 合格', disabled: false, area: { top: '80%', left: '10%', width: '80%', height: '10%', startTime: 37, endTime: 51 }, isExpanded: false, speaker: 'Sperker2' },
-    { id: 'text_page2_intro', type: 'text', content: '这是第二页的介绍内容，详细阐述了检测流程的初步阶段。', disabled: false, area: { top: '20%', left: '10%', width: '80%', height: '10%', startTime: 53, endTime: 70 }, isExpanded: false, speaker: 'Speaker1' },
-    { id: 'text_page3_details', type: 'text', content: '第三页提供了具体的检测细节和数据分析方法，包括各种算法的运用和结果的解读。本页内容较为专业，旨在为技术人员提供深入的参考。', disabled: false, area: { top: '15%', left: '10%', width: '80%', height: '20%', startTime: 71, endTime: 95 }, isExpanded: false, speaker: 'Sperker2' },
-    { id: 'text_page4_conclusion', type: 'text', content: '第四页是报告的结论部分，总结了本次检测的发现和建议，并对未来的研究方向提出了展望。', disabled: false, area: { top: '25%', left: '10%', width: '80%', height: '15%', startTime: 97, endTime: 120 }, isExpanded: false, speaker: 'Speaker1' },
-    { id: 'text_page5_appendix', type: 'text', content: '第五页是附录，包含了所有引用的参考文献列表和一些补充材料。', disabled: false, area: { top: '30%', left: '10%', width: '80%', height: '10%', startTime: 122, endTime: 229 }, isExpanded: false, speaker: 'Speaker1' }
+    { id: 'text_info_title', type: 'text', content: '论文题目: 基于语音辅助的多语言文本分类语言偏见去偏研究方佳俊', disabled: false, area: { top: '29%', left: '15%', width: '70%', height: '5%', startTime: 0, endTime: 45 }, isExpanded: false, speaker: 'Speaker1', confidence: 0.95 },
+    { id: 'text_info_author', type: 'text', content: `论文作者: 方佳俊 指导教师 阳爱民\\n\\n该作者在多语言文本分类领域进行了深入研究，尤其关注如何消除语言偏见对模型性能的影响。他的研究旨在开发创新的语音辅助去偏技术，以提高跨语言文本分类的公平性和准确性。\\n\\n研究内容涵盖了以下几个方面：\\n1. 多语言数据集的构建与偏见分析。\\n2. 基于语音特征的语言偏见识别方法。\\n3. 深度学习模型在去偏任务中的应用。\\n4. 评估去偏效果的指标与方法。\\n5. 实际应用场景中的案例分析与效果验证。\\n\\n方佳俊同学的这项工作对于推动多语言自然语言处理技术的发展，以及构建更公平、更具包容性的人工智能系统具有重要意义。他的研究成果不仅填补了相关领域的空白，也为未来的研究提供了宝贵的思路和方向。\\n\\n在研究过程中，他积极参与学术交流，多次在国内外顶级会议上发表论文，并与多个研究机构建立了合作关系。这些经历进一步丰富了他的学术视野和实践能力。\\n\\n为了充分展示该研究的深度和广度，我们在此增加更多详细信息。研究团队在数据预处理阶段投入了大量精力，确保了训练数据的多样性和代表性。他们采用了先进的自然语言处理技术，对不同语言的文本数据进行了细致的特征提取和表示学习。在模型设计方面，研究人员探索了多种神经网络架构，包括循环神经网络（RNN）、长短期记忆网络（LSTM）和Transformer等，并针对语音辅助去偏的特点进行了创新性改进。\\n\\n实验结果表明，所提出的语音辅助去偏方法在多个公开数据集上均取得了显著的性能提升，有效降低了语言偏见对文本分类结果的影响。这些成果为构建更加鲁棒和公平的AI系统提供了坚实的基础。未来的工作将侧重于将该技术应用于更广泛的领域，例如情感分析、意图识别和机器翻译等，并进一步探索多模态信息融合的潜力。\\n\\n为了确保滚动条能够出现，我们继续增加一些内容。这项研究的创新之处在于其跨学科的融合，将语音信号处理与自然语言处理技术相结合，为解决多语言环境下的偏见问题提供了新的视角。此外，研究团队还开发了一套可扩展的评估框架，能够全面衡量去偏算法的有效性，并为不同应用场景提供定制化的解决方案。这些努力共同构成了方佳俊同学在多语言文本分类语言偏见去偏研究方面的全面贡献。他的研究不仅具有理论价值，更具备实际应用潜力，有望在未来为全球范围内的多语言信息处理带来积极影响。\\n\\n我们还将进一步探讨二维码在现代商业中的多种应用。除了作为联系客服的便捷工具，二维码还可以被集成到营销活动中，例如扫描二维码获取折扣券、参与抽奖活动或直接跳转到产品购买页面。在物流和仓储管理中，二维码被广泛用于追踪货物，提高效率和准确性。在教育领域，学生可以通过扫描二维码快速访问在线课程资料或提交作业。这些多样化的应用场景充分体现了二维码作为一种高效信息载体的巨大潜力，它极大地简化了信息获取和交互过程，为用户带来了前所未有的便利。方佳俊的研究论文还详细讨论了在不同语言对（如中英、中日）之间进行偏见去偏的挑战和机遇，并提出了针对性的策略。他强调了跨文化语境理解的重要性，以及如何通过引入文化敏感性特征来进一步提升模型的去偏能力。`, disabled: false, area: { top: '34%', left: '15%', width: '70%', height: '3%', startTime: 45, endTime: 120 }, isExpanded: false, speaker: 'Speaker1', confidence: 0.92 },
+    { id: 'text_detection_desc_1', type: 'text', content: `1. 检测依据:学校模板《广东工业大学硕士专业学位论文模板》;国家标准《GB7713 学位论文编写格式》,《GB7714参考文献著录规则》,《GB15834标点符号用法》,《GB15835出版物上数字用法》,《GB3100国际单位制及其应用》,《GB3101有关量单位符号的一般原则》,《GB3102空间和时间的量和单位》。\\n\\n本检测报告严格遵循上述国家标准和学校规定，确保检测过程的严谨性和结果的准确性。所有引用规则均经过最新修订，以适应当前学术规范的要求。检测范围涵盖了从论文结构、引用格式到标点符号使用等多个维度，旨在提供全面、细致的格式审查服务。\\n\\n我们致力于帮助学生和研究人员提升论文质量，符合各项出版和学术要求。`, disabled: false, area: { top: '55%', left: '10%', width: '80%', height: '15%', startTime: 120, endTime: 210 }, isExpanded: false, speaker: 'Sperker2', confidence: 0.88 },
+    { id: 'text_detection_result', type: 'text', content: '检测结果: 全文页数 72, 字符统计 65979, 中文字符 31115, 非中文单词 3372, 问题总数 = 6, 万字差错率 0.90/10000, 结论 合格', disabled: false, area: { top: '80%', left: '10%', width: '80%', height: '10%', startTime: 210, endTime: 280 }, isExpanded: false, speaker: 'Sperker2', confidence: 0.96 },
+    { id: 'text_page2_intro', type: 'text', content: '这是第二页的介绍内容，详细阐述了检测流程的初步阶段。', disabled: false, area: { top: '20%', left: '10%', width: '80%', height: '10%', startTime: 280, endTime: 350 }, isExpanded: false, speaker: 'Speaker1', confidence: 0.91 },
+    { id: 'text_page3_details', type: 'text', content: '第三页提供了具体的检测细节和数据分析方法，包括各种算法的运用和结果的解读。本页内容较为专业，旨在为技术人员提供深入的参考。', disabled: false, area: { top: '15%', left: '10%', width: '80%', height: '20%', startTime: 350, endTime: 450 }, isExpanded: false, speaker: 'Sperker2', confidence: 0.89 },
+    { id: 'text_page4_conclusion', type: 'text', content: '第四页是报告的结论部分，总结了本次检测的发现和建议，并对未来的研究方向提出了展望。', disabled: false, area: { top: '25%', left: '10%', width: '80%', height: '15%', startTime: 450, endTime: 520 }, isExpanded: false, speaker: 'Speaker1', confidence: 0.93 },
+    { id: 'text_page5_appendix', type: 'text', content: '第五页是附录，包含了所有引用的参考文献列表和一些补充材料。', disabled: false, area: { top: '30%', left: '10%', width: '80%', height: '10%', startTime: 520, endTime: 596 }, isExpanded: false, speaker: 'Speaker1', confidence: 0.87 }
 ];
 
 // 修改parsedBlocks中text_detection_desc_1，支持areas数组
@@ -92,6 +92,7 @@ const Icons = {
     ChevronLeft: (size = 16, className = "") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
     ChevronRight: (size = 16, className = "") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
     X: (size = 20, className = "") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>`,
+    Play: (size = 18, className = "text-blue-600") => `<svg class="${className}" style="width:${size}px; height:${size}px; display:inline-block; vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
 };
 
 // Function to set current page and re-render
@@ -184,6 +185,11 @@ function renderApp() {
     } else if (currentPage === 'smartSearch') {
         attachSmartSearchListeners();
     }
+    
+    // 渲染完成后立即更新时间显示
+    setTimeout(() => {
+        updateTimeDisplay();
+    }, 50);
 }
 
 // Placeholder for component rendering functions and listener attachment
@@ -265,14 +271,22 @@ function renderDocumentParsingDetails() {
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
                             ID: ${block.id}
                         </span>
+                        <!--
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
                             ${block.speaker || '未知'}
                         </span>
+                        -->
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
                             时间段: ${formatTime(block.area.startTime)} - ${formatTime(block.area.endTime)}
                         </span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                            置信度: ${Math.round((block.confidence || 0) * 100)}%
+                        </span>
                     </div>
                     <div class="flex space-x-3 items-center">
+                        <button class="play-block-btn text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 rounded-full transition-colors" data-id="${block.id}" title="播放此时间段">
+                            ${Icons.Play(18)}
+                        </button>
                         <button class="delete-block-btn text-gray-500 hover:text-red-600" data-id="${block.id}" title="删除">
                             ${Icons.Trash2(18)}
                         </button>
@@ -339,6 +353,10 @@ function renderDocumentParsingDetails() {
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
+                    <span class="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold">job</span>
+                    <button id="job-name-btn" class="text-sm text-blue-600 font-medium hover:text-blue-800 hover:underline transition-colors cursor-pointer">document-detection-report</button>
+                  </div>
+                  <div class="flex items-center gap-2">
                     <span class="inline-block px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">文件</span>
                     <span class="text-sm text-gray-700 font-medium">2112205248_方佳俊_检测简明报告.mp4</span>
                   </div>
@@ -347,18 +365,19 @@ function renderDocumentParsingDetails() {
                   <div class="p-6">
                     <div id="original-doc-preview-list" class="flex flex-col gap-6">
                             <div class="relative group border rounded-lg border-gray-200">
-                            <iframe
-                              src="https://player.bilibili.com/player.html?bvid=BV1nb411G7Ez&autoplay=0"
-                              scrolling="no"
-                              border="0"
-                              frameborder="no"
-                              framespacing="0"
-                              allowfullscreen="true"
+                            <video
+                              id="video-player"
+                              controls
                               style="width:100%;height:360px;border-radius:12px;"
-                            ></iframe>
-                                <div class="absolute left-2 top-2 bg-black bg-opacity-40 text-white text-xs px-2 py-0.5 rounded">
-                                ${formatTime(videoCurrentTime)} / ${formatTime(videoDuration)}
+                              src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                            >
+                              您的浏览器不支持视频播放。
+                            </video>
+                                <!--
+                                <div id="video-time-display" class="absolute left-2 top-2 bg-black bg-opacity-40 text-white text-xs px-2 py-0.5 rounded">
+                                00:00 / 00:00
                                 </div>
+                                -->
                             <!-- 分块高亮已移除 -->
                             </div>
                     </div>
@@ -380,7 +399,7 @@ function renderDocumentParsingDetails() {
                   <div class="flex-shrink-0 w-[320px]">
                     <div class="flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 text-base shadow-sm">
                             <span class="text-gray-400 mr-2 flex items-center">${Icons.Search(20)}</span>
-                      <input id="dpd-search-text-query" type="text" placeholder="搜索文本和说话人..." value="${searchTextQuery}"
+                      <input id="dpd-search-text-query" type="text" placeholder="搜索你想要的内容" value="${searchTextQuery}"
                                    class="flex-grow outline-none text-base bg-transparent" />
                             <button id="dpd-search-text-btn" class="flex items-center justify-center h-full px-3 text-gray-400 hover:text-blue-600 focus:outline-none">${Icons.Search(22)}</button>
                           </div>
@@ -555,6 +574,7 @@ function attachDocumentParsingDetailsListeners() {
     const parsedBlocksContainer = document.getElementById('parsed-blocks-container');
     if (parsedBlocksContainer) {
         parsedBlocksContainer.addEventListener('click', (e) => {
+            console.log('容器点击事件触发，目标元素:', e.target);
             const target = e.target;
             let blockItem = target.closest('.block-item');
             let blockId = blockItem?.dataset.id;
@@ -563,7 +583,16 @@ function attachDocumentParsingDetailsListeners() {
             if (target.closest('.delete-block-btn')) {
                 e.stopPropagation();
                 blockId = target.closest('.delete-block-btn').dataset.id;
+                console.log('删除按钮被点击，块ID:', blockId);
                 handleDeleteClick(blockId);
+                return;
+            }
+            // Play button
+            if (target.closest('.play-block-btn')) {
+                e.stopPropagation();
+                blockId = target.closest('.play-block-btn').dataset.id;
+                console.log('播放按钮被点击，块ID:', blockId);
+                handlePlayClick(blockId);
                 return;
             }
             // Toggle disable button
@@ -686,14 +715,44 @@ function attachDocumentParsingDetailsListeners() {
 
     // Video player event listeners
     const videoPlayer = document.getElementById('video-player');
+    console.log('查找视频播放器元素:', videoPlayer);
     if (videoPlayer) {
+        console.log('视频播放器元素找到，添加事件监听器');
+        
+        // 立即获取视频信息并更新显示
+        const initializeVideoInfo = () => {
+            if (videoPlayer.duration && !isNaN(videoPlayer.duration)) {
+                videoDuration = videoPlayer.duration;
+                console.log('获取到视频时长:', videoDuration);
+            }
+            videoCurrentTime = videoPlayer.currentTime || 0;
+            updateTimeDisplay();
+        };
+        
+        // 立即尝试初始化
+        initializeVideoInfo();
+        
+        // 延迟再次尝试初始化
+        setTimeout(initializeVideoInfo, 200);
+        setTimeout(initializeVideoInfo, 500);
+        setTimeout(initializeVideoInfo, 1000);
+        
+        // 设置定时器定期更新时间显示
+        const timeUpdateInterval = setInterval(() => {
+            if (videoPlayer) {
+                videoCurrentTime = videoPlayer.currentTime || 0;
+                if (!videoDuration && videoPlayer.duration && !isNaN(videoPlayer.duration)) {
+                    videoDuration = videoPlayer.duration;
+                    console.log('定时器获取到视频时长:', videoDuration);
+                }
+                updateTimeDisplay();
+            }
+        }, 500);
+        
         videoPlayer.addEventListener('timeupdate', () => {
             videoCurrentTime = videoPlayer.currentTime;
             // Update time display
-            const timeDisplay = document.querySelector('.absolute.left-2.top-2');
-            if (timeDisplay) {
-                timeDisplay.textContent = `${formatTime(videoCurrentTime)} / ${formatTime(videoDuration)}`;
-            }
+            updateTimeDisplay();
             // Check for highlights that should be shown/hidden based on current time
             document.querySelectorAll('.video-highlight-area').forEach(area => {
                 const startTime = parseFloat(area.dataset.startTime);
@@ -708,14 +767,53 @@ function attachDocumentParsingDetailsListeners() {
 
         videoPlayer.addEventListener('loadedmetadata', () => {
             videoDuration = videoPlayer.duration;
-            // Update time display with duration
-            const timeDisplay = document.querySelector('.absolute.left-2.top-2');
-            if (timeDisplay) {
-                timeDisplay.textContent = `${formatTime(videoCurrentTime)} / ${formatTime(videoDuration)}`;
-            }
-            renderApp(); // 触发重新渲染，确保左上角时间显示真实时长
+            console.log('视频元数据加载完成，时长:', videoDuration);
+            // Update time display with duration immediately
+            updateTimeDisplay();
+            // Update any UI elements that depend on video duration
+            const startTimeInput = document.getElementById('dpd-start-time');
+            const endTimeInput = document.getElementById('dpd-end-time');
+            if (startTimeInput) startTimeInput.max = videoDuration;
+            if (endTimeInput) endTimeInput.max = videoDuration;
         });
+
+        // 添加更多事件监听器确保时间显示同步
+        videoPlayer.addEventListener('loadeddata', () => {
+            updateTimeDisplay();
+        });
+
+        videoPlayer.addEventListener('canplay', () => {
+            updateTimeDisplay();
+        });
+
+        videoPlayer.addEventListener('seeked', () => {
+            updateTimeDisplay();
+        });
+
+        // 添加播放/暂停事件监听器用于调试
+        videoPlayer.addEventListener('play', () => {
+            console.log('视频开始播放');
+        });
+
+        videoPlayer.addEventListener('pause', () => {
+            console.log('视频暂停');
+        });
+
+        videoPlayer.addEventListener('error', (e) => {
+            console.log('视频播放错误:', e);
+        });
+    } else {
+        console.log('未找到视频播放器元素');
     }
+
+    // 添加调试：检查播放按钮是否存在
+    setTimeout(() => {
+        const playButtons = document.querySelectorAll('.play-block-btn');
+        console.log('找到播放按钮数量:', playButtons.length);
+        playButtons.forEach((btn, index) => {
+            console.log(`播放按钮 ${index + 1}:`, btn, '对应块ID:', btn.dataset.id);
+        });
+    }, 100);
 
     // 时间区间筛选事件
     /*
@@ -748,6 +846,14 @@ function attachDocumentParsingDetailsListeners() {
       });
     }
     */
+
+    // Job 名按钮点击事件
+    const jobNameBtn = document.getElementById('job-name-btn');
+    if (jobNameBtn) {
+      jobNameBtn.addEventListener('click', () => {
+        alert('Job 详情页面开发中\n\nJob 名: 检测简明报告处理任务\nJob ID: JOB_20241201_001\n状态: 运行中');
+      });
+    }
 }
 
 // --- Helper functions for DocumentParsingDetails logic ---
@@ -755,6 +861,80 @@ function handleDeleteClick(id) {
     blockToDeleteId = id;
     // Use the global showConfirmationModal function
     showConfirmationModal("您确定要删除此分块吗？此操作不可撤销。", confirmDelete, cancelDelete);
+}
+
+function handlePlayClick(id) {
+    console.log('handlePlayClick 被调用，块ID:', id);
+    const block = parsedBlocks.find(b => b.id === id);
+    if (!block || !block.area) {
+        console.log('找不到对应的文本块或时间信息');
+        return;
+    }
+    
+    console.log('找到文本块:', block);
+    
+    const videoPlayer = document.getElementById('video-player');
+    if (!videoPlayer) {
+        console.log('找不到视频播放器元素');
+        return;
+    }
+
+    console.log('视频播放器元素:', videoPlayer);
+    console.log(`播放时间段: ${formatTime(block.area.startTime)} - ${formatTime(block.area.endTime)}`);
+    
+    // 设置当前高亮块
+    highlightedBlockId = id;
+    
+    // 更新当前选中的块样式（不重新渲染整个页面）
+    document.querySelectorAll('.block-item').forEach(item => {
+        item.classList.remove('border-blue-500', 'ring-2', 'ring-blue-400', 'shadow-lg');
+        item.classList.add('border-gray-200');
+    });
+    
+    const currentBlockElement = document.getElementById(`block-${id}`);
+    if (currentBlockElement) {
+        currentBlockElement.classList.remove('border-gray-200');
+        currentBlockElement.classList.add('border-blue-500', 'ring-2', 'ring-blue-400', 'shadow-lg');
+        console.log('已高亮文本块');
+    }
+    
+    // 跳转到开始时间并播放
+    try {
+        console.log('设置视频时间到:', block.area.startTime);
+        videoPlayer.currentTime = block.area.startTime;
+        
+        console.log('尝试播放视频...');
+        const playPromise = videoPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('视频开始播放成功');
+            }).catch(error => {
+                console.log('播放失败:', error);
+                // 可能需要用户交互才能播放
+                alert('播放失败，可能需要先点击视频播放器进行用户交互。错误：' + error.message);
+            });
+        }
+    } catch (error) {
+        console.log('播放过程中发生错误:', error);
+    }
+    
+    // 移除之前的时间监听器（如果存在）
+    if (videoPlayer._currentEndTimeListener) {
+        videoPlayer.removeEventListener('timeupdate', videoPlayer._currentEndTimeListener);
+    }
+    
+    // 添加新的时间监听器，在结束时间暂停
+    const checkEndTime = () => {
+        if (videoPlayer.currentTime >= block.area.endTime) {
+            videoPlayer.pause();
+            console.log(`在${formatTime(block.area.endTime)}处自动暂停`);
+            videoPlayer.removeEventListener('timeupdate', checkEndTime);
+            videoPlayer._currentEndTimeListener = null;
+        }
+    };
+    videoPlayer.addEventListener('timeupdate', checkEndTime);
+    videoPlayer._currentEndTimeListener = checkEndTime;
 }
 
 function confirmDelete() {
@@ -833,25 +1013,40 @@ function openDetailViewModal(content, type) {
 // This function is ALREADY DEFINED GLOBALLY: closeDetailViewModal
 
 function handleBlockSelect(id) {
+    console.log('选中分块:', id);
     highlightedBlockId = id;
-    const areaToScroll = hoverAreas.find(area => area.id === id);
-        renderApp();
-    requestAnimationFrame(() => {
-        const block = parsedBlocks.find(b => b.id === id);
-        const videoPlayer = document.getElementById('video-player');
-        if (block && block.area && typeof block.area.startTime === 'number' && videoPlayer) {
-            videoPlayer.currentTime = block.area.startTime;
-        }
-        if (areaToScroll) {
-            const previewList = document.getElementById('original-doc-preview-list');
-            if (previewList) {
-                const img = previewList.querySelector(`img[data-page='${areaToScroll.page}']`);
-                if (img) {
-                    img.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-    }
+    
+    // 更新当前选中的块样式（不重新渲染整个页面）
+    document.querySelectorAll('.block-item').forEach(item => {
+        item.classList.remove('border-blue-500', 'ring-2', 'ring-blue-400', 'shadow-lg');
+        item.classList.add('border-gray-200');
     });
+    
+    const currentBlockElement = document.getElementById(`block-${id}`);
+    if (currentBlockElement) {
+        currentBlockElement.classList.remove('border-gray-200');
+        currentBlockElement.classList.add('border-blue-500', 'ring-2', 'ring-blue-400', 'shadow-lg');
+        console.log('已高亮分块:', id);
+    }
+    
+    // 获取分块信息并设置视频时间
+    const block = parsedBlocks.find(b => b.id === id);
+    const videoPlayer = document.getElementById('video-player');
+    
+    if (block && block.area && typeof block.area.startTime === 'number' && videoPlayer) {
+        console.log(`设置视频时间到分块起始时间: ${formatTime(block.area.startTime)}`);
+        videoPlayer.currentTime = block.area.startTime;
+        
+        // 更新全局时间变量
+        videoCurrentTime = block.area.startTime;
+        
+        // 强制更新时间显示（如果有的话）
+        updateTimeDisplay();
+        
+        console.log('视频进度条已定位到:', formatTime(block.area.startTime));
+    } else {
+        console.log('无法设置视频时间 - 分块或视频播放器未找到');
+    }
 }
 
 function renderSmartSearch() {
@@ -1180,15 +1375,32 @@ function renderDetailViewModalInternal(content, type) {
 
 // Helper function to format time in MM:SS format
 function formatTime(seconds) {
-    if (!seconds) return '00:00';
+    if (!seconds || isNaN(seconds)) return '00:00';
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
+// Helper function to update time display
+function updateTimeDisplay() {
+    const timeDisplay = document.getElementById('video-time-display');
+    if (timeDisplay) {
+        const currentTime = videoCurrentTime || 0;
+        const duration = videoDuration || 0;
+        timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+        console.log('时间显示已更新:', timeDisplay.textContent);
+    } else {
+        console.log('未找到时间显示元素');
+    }
+}
+
 // Initial setup
 document.addEventListener('DOMContentLoaded', () => {
     renderApp();
+    // 初始化时间显示
+    setTimeout(() => {
+        updateTimeDisplay();
+    }, 100);
 });
 
 // Helper function to escape HTML content
