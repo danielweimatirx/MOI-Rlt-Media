@@ -21,6 +21,8 @@ let videoDuration = 0; // Will be set when video metadata loads
 let parsedBlocksCurrentPage = 1;
 let blocksPerPage = 5;
 let expandedBlockId = null;
+let confidenceMin = 0; // Minimum confidence filter (0-100)
+let confidenceMax = 100; // Maximum confidence filter (0-100)
 const APPROX_LINE_CHAR_LIMIT = 180;
 
 // Mock data for parsed blocks
@@ -216,6 +218,13 @@ function renderDocumentParsingDetails() {
                 (block.type === 'image' && block.imageDescription && block.imageDescription.toLowerCase().includes(lowerCaseText))
             );
         }
+        // 置信度筛选
+        if (confidenceMin > 0 || confidenceMax < 100) {
+            filtered = filtered.filter(block => {
+                const blockConfidence = Math.round((block.confidence || 0) * 100);
+                return blockConfidence >= confidenceMin && blockConfidence <= confidenceMax;
+            });
+        }
         // 将 QR Code1 和 QR Code2 提到最前面
         const qrOrder = ['image_qr_code_1', 'image_qr_code_2'];
         filtered = [
@@ -400,14 +409,34 @@ function renderDocumentParsingDetails() {
                           </div>
                   </div>
                   -->
-                  <div class="flex-shrink-0 w-[320px]">
-                    <div class="flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 text-base shadow-sm">
-                            <span class="text-gray-400 mr-2 flex items-center">${Icons.Search(20)}</span>
+                  <div class="flex-shrink-0 w-[240px]">
+                    <div class="flex items-center bg-white border border-gray-300 rounded-full px-3 py-1.5 text-sm shadow-sm">
+                            <span class="text-gray-400 mr-2 flex items-center">${Icons.Search(16)}</span>
                       <input id="dpd-search-text-query" type="text" placeholder="搜索你想要的内容" value="${searchTextQuery}"
-                                   class="flex-grow outline-none text-base bg-transparent" />
-                            <button id="dpd-search-text-btn" class="flex items-center justify-center h-full px-3 text-gray-400 hover:text-blue-600 focus:outline-none">${Icons.Search(22)}</button>
+                                   class="flex-grow outline-none text-sm bg-transparent" />
+                            <button id="dpd-search-text-btn" class="flex items-center justify-center h-full px-2 text-gray-400 hover:text-blue-600 focus:outline-none">${Icons.Search(18)}</button>
                           </div>
                         </div>
+                  <div class="flex-shrink-0">
+                    <div class="flex items-center bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm">
+                      <div class="flex items-center mr-3">
+                        <span class="inline-block w-1 h-4 bg-green-500 rounded mr-2"></span>
+                        <span class="text-gray-700 font-medium">置信度筛选</span>
+                      </div>
+                      <div class="flex items-center bg-gray-50 rounded-md px-2 py-1">
+                        <input id="dpd-confidence-min" type="number" min="0" max="100" step="1" placeholder="0" value="${confidenceMin}"
+                               class="w-12 outline-none text-sm bg-transparent text-center placeholder-gray-400" />
+                        <span class="text-gray-500 mx-2 font-medium">至</span>
+                        <input id="dpd-confidence-max" type="number" min="0" max="100" step="1" placeholder="100" value="${confidenceMax}"
+                               class="w-12 outline-none text-sm bg-transparent text-center placeholder-gray-400" />
+                        <span class="text-gray-500 ml-1">%</span>
+                      </div>
+                      <div class="flex items-center ml-3 space-x-1">
+                        <button id="dpd-confidence-filter-btn" class="px-3 py-1 bg-blue-500 text-white rounded-md font-medium shadow hover:bg-blue-600 transition-colors text-xs">应用</button>
+                        <button id="dpd-confidence-clear-btn" class="px-2 py-1 bg-gray-100 text-gray-600 rounded-md font-medium shadow hover:bg-gray-200 transition-colors text-xs">重置</button>
+                      </div>
+                      </div>
+                    </div>
                   <!--
                   <div class="flex-shrink-0">
                     <div class="flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 text-base shadow-sm">
@@ -864,6 +893,46 @@ function attachDocumentParsingDetailsListeners() {
         alert('Job 详情页面开发中\n\nJob 名: 检测简明报告处理任务\nJob ID: JOB_20241201_001\n状态: 运行中');
       });
     }
+
+    // 置信度筛选事件
+    const confidenceMinInput = document.getElementById('dpd-confidence-min');
+    const confidenceMaxInput = document.getElementById('dpd-confidence-max');
+    const confidenceFilterBtn = document.getElementById('dpd-confidence-filter-btn');
+    const confidenceClearBtn = document.getElementById('dpd-confidence-clear-btn');
+    
+    if (confidenceFilterBtn && confidenceMinInput && confidenceMaxInput) {
+      confidenceFilterBtn.addEventListener('click', () => {
+        const minVal = Number(confidenceMinInput.value) || 0;
+        const maxVal = Number(confidenceMaxInput.value) || 100;
+        
+        // 确保范围合法
+        confidenceMin = Math.max(0, Math.min(100, minVal));
+        confidenceMax = Math.max(0, Math.min(100, maxVal));
+        
+        // 确保最小值不大于最大值
+        if (confidenceMin > confidenceMax) {
+          const temp = confidenceMin;
+          confidenceMin = confidenceMax;
+          confidenceMax = temp;
+        }
+        
+        parsedBlocksCurrentPage = 1;
+        expandedBlockId = null;
+        renderApp();
+      });
+    }
+    
+    if (confidenceClearBtn) {
+      confidenceClearBtn.addEventListener('click', () => {
+        confidenceMin = 0;
+        confidenceMax = 100;
+        parsedBlocksCurrentPage = 1;
+        expandedBlockId = null;
+        renderApp();
+      });
+    }
+
+    document.getElementById('dpd-filter-all')?.addEventListener('click', () => { setDisplayFilterAndRefresh('all'); });
 }
 
 // --- Helper functions for DocumentParsingDetails logic ---
