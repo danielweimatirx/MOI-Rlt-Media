@@ -287,9 +287,11 @@ function renderDocumentParsingDetails() {
                         <button class="play-block-btn text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 rounded-full transition-colors" data-id="${block.id}" title="播放此时间段">
                             ${Icons.Play(18)}
                         </button>
+                        <!--
                         <button class="delete-block-btn text-gray-500 hover:text-red-600" data-id="${block.id}" title="删除">
                             ${Icons.Trash2(18)}
                         </button>
+                        -->
                         <div class="toggle-disable-btn cursor-pointer" data-id="${block.id}" title="${block.disabled ? '启用' : '禁用'}">
                             ${block.disabled ? Icons.ToggleLeft(24) : Icons.ToggleRight(24)}
                         </div>
@@ -580,6 +582,7 @@ function attachDocumentParsingDetailsListeners() {
             let blockId = blockItem?.dataset.id;
 
             // Delete button
+            /*
             if (target.closest('.delete-block-btn')) {
                 e.stopPropagation();
                 blockId = target.closest('.delete-block-btn').dataset.id;
@@ -587,6 +590,7 @@ function attachDocumentParsingDetailsListeners() {
                 handleDeleteClick(blockId);
                 return;
             }
+            */
             // Play button
             if (target.closest('.play-block-btn')) {
                 e.stopPropagation();
